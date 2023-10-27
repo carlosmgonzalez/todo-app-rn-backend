@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model shared_todos {
+  id                                       Int    @id @default(autoincrement())
+  todo_id                                  Int?
+  user_id                                  Int?
+  shared_with_id                           Int?
+  todos                                    todos? @relation(fields: [todo_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "shared_todos_ibfk_1")
+  users_shared_todos_user_idTousers        users? @relation("shared_todos_user_idTousers", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "shared_todos_ibfk_2")
+  users_shared_todos_shared_with_idTousers users? @relation("shared_todos_shared_with_idTousers", fields: [shared_with_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "shared_todos_ibfk_3")
+
+  @@index([shared_with_id], map: "shared_with_id")
+  @@index([todo_id], map: "todo_id")
+  @@index([user_id], map: "user_id")
+}
+
+model todos {
+  id           Int            @id @default(autoincrement())
+  title        String?        @db.VarChar(255)
+  completed    Boolean?       @default(false)
+  user_id      Int
+  shared_todos shared_todos[]
+  users        users          @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "todos_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+model users {
+  id                                              Int            @id @default(autoincrement())
+  name                                            String?        @db.VarChar(255)
+  email                                           String         @unique(map: "email") @db.VarChar(255)
+  password                                        String?        @db.VarChar(255)
+  shared_todos_shared_todos_user_idTousers        shared_todos[] @relation("shared_todos_user_idTousers")
+  shared_todos_shared_todos_shared_with_idTousers shared_todos[] @relation("shared_todos_shared_with_idTousers")
+  todos                                           todos[]
+}

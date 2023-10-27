@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const todos_controller_1 = require("../controllers/todos.controller");
+const router = (0, express_1.Router)();
+router.get("/:id", todos_controller_1.getTodoById);
+router.get("/user/:id", todos_controller_1.getTodosByUserId);
+router.post("", todos_controller_1.createTodo);
+router.delete("/:id", todos_controller_1.deleteTodo);
+router.post("/share", todos_controller_1.shareTodo);
+router.put("/:id", todos_controller_1.toggleCompleted);
+router.get("/author-shared/:id", todos_controller_1.sharedTodoWith);
+exports.default = router;
